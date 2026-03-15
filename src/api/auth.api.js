@@ -1,0 +1,20 @@
+import api from "./client";
+
+
+export  const loginApi = (data) => api.post("auth/login", data)
+export const signupApi = (data) => api.post("/register" , data)
+
+
+
+export const confirmTokenApi = (token) =>
+  api.get(`/register/confirmToken?token=${token}`);
+
+
+// forgot password apis 
+
+export const sendotp = (data) => api.post("auth/sendotp" ,data)
+
+export const verifyotp = (data) => api.post("auth/verifyotp", data)
+
+
+export const changepassword = (data) => api.post("auth/resetpassword", data)
