@@ -6,14 +6,16 @@ import {
   Text,
   View,
 } from "react-native";
-import MapView from "react-native-maps";
-import { FromToInput } from "../components/FromToInput";
+import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
+import FromToInput from "../components/FromToInput";
 
 import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import { useFonts } from "expo-font";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Inter_400Regular,
@@ -23,7 +25,14 @@ import {
 
 const { width } = Dimensions.get("window");
 
+const GOOGLE_API_KEY = "YOUR_WORKING_API_KEY"; // 🔥 replace this
+
 const Home = () => {
+  const mapRef = useRef(null);
+
+  const [from, setForm] = useState(null);
+  const [to, setTo] = useState(null);
+
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
     Poppins_600SemiBold,
@@ -32,28 +41,44 @@ const Home = () => {
     Inter_600SemiBold,
   });
 
+  // 🔥 AUTO ZOOM when both selected
+  useEffect(() => {
+    if (from && to && mapRef.current) {
+      mapRef.current.fitToCoordinates(
+        [
+          { latitude: from.lat, longitude: from.lng },
+          { latitude: to.lat, longitude: to.lng },
+        ],
+        {
+          edgePadding: { top: 100, right: 50, bottom: 100, left: 50 },
+          animated: true,
+        },
+      );
+    }
+  }, [from, to]);
+
   if (!fontsLoaded) return null;
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView keyboardShouldPersistTaps="handled">
         {/* HEADER */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Good evening 👋</Text>
             <Text style={styles.subtitle}>Where are we going today?</Text>
           </View>
-
-          {/* <Usericon /> */}
         </View>
 
         {/* SEARCH */}
         <View style={styles.searchCard}>
-          <FromToInput />
+          <FromToInput setForm={setForm} setTo={setTo} />
         </View>
 
         {/* MAP */}
         <View style={styles.mapWrapper}>
           <MapView
+            ref={mapRef}
             style={styles.map}
             initialRegion={{
               latitude: 19.076,
@@ -61,10 +86,55 @@ const Home = () => {
               latitudeDelta: 0.05,
               longitudeDelta: 0.05,
             }}
-          />
+          >
+            {/* 🚗 ROUTE */}
+            {from && to && (
+              <MapViewDirections
+                origin={{
+                  latitude: from.lat,
+                  longitude: from.lng,
+                }}
+                destination={{
+                  latitude: to.lat,
+                  longitude: to.lng,
+                }}
+                apikey={GOOGLE_API_KEY}
+                strokeWidth={5}
+                strokeColor="blue"
+                onReady={(result) => {
+                  console.log("Distance:", result.distance, "km");
+                  console.log("Duration:", result.duration, "min");
+                }}
+              />
+            )}
+
+            {/* FROM */}
+            {from && (
+              <Marker
+                coordinate={{
+                  latitude: from.lat,
+                  longitude: from.lng,
+                }}
+                title="Start"
+                pinColor="green"
+              />
+            )}
+
+            {/* TO */}
+            {to && (
+              <Marker
+                coordinate={{
+                  latitude: to.lat,
+                  longitude: to.lng,
+                }}
+                title="End"
+                pinColor="red"
+              />
+            )}
+          </MapView>
         </View>
 
-        {/* RECENT RIDES */}
+        {/* EXTRA UI */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Rides</Text>
 
@@ -73,42 +143,7 @@ const Home = () => {
               <Text style={styles.rideTitle}>Bandra → Andheri</Text>
               <Text style={styles.rideSub}>12 km • Yesterday</Text>
             </View>
-
-            <View style={styles.rideCard}>
-              <Text style={styles.rideTitle}>Dadar → Colaba</Text>
-              <Text style={styles.rideSub}>9 km • 2 days ago</Text>
-            </View>
-
-            <View style={styles.rideCard}>
-              <Text style={styles.rideTitle}>Kurla → BKC</Text>
-              <Text style={styles.rideSub}>6 km • 3 days ago</Text>
-            </View>
           </ScrollView>
-        </View>
-
-        {/* BLOG */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ride Tips</Text>
-
-          <View style={styles.blogCard}>
-            <View style={styles.blogImage} />
-            <View style={styles.blogContent}>
-              <Text style={styles.blogTitle}>Ride Safely in City Traffic</Text>
-              <Text style={styles.blogText}>
-                Learn techniques to avoid common traffic dangers.
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.blogCard}>
-            <View style={styles.blogImage} />
-            <View style={styles.blogContent}>
-              <Text style={styles.blogTitle}>Weekly Bike Maintenance</Text>
-              <Text style={styles.blogText}>
-                Simple habits that keep your bike running smoothly.
-              </Text>
-            </View>
-          </View>
         </View>
 
         <View style={{ height: 50 }} />
@@ -126,9 +161,6 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: 20,
     marginTop: 10,
   },
@@ -136,15 +168,12 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 24,
     fontFamily: "Poppins_700Bold",
-    color: "#111827",
-    letterSpacing: 0.3,
   },
 
   subtitle: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: "#6B7280",
-    marginTop: 4,
   },
 
   searchCard: {
@@ -152,11 +181,6 @@ const styles = StyleSheet.create({
     margin: 16,
     padding: 18,
     borderRadius: 20,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
   },
 
   mapWrapper: {
@@ -177,74 +201,25 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "700",
     fontFamily: "Poppins_600SemiBold",
-    color: "#1A1A1A",
-    marginBottom: 12,
   },
 
   rideCard: {
     width: width * 0.65,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fff",
     padding: 18,
     borderRadius: 18,
     marginRight: 12,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
 
   rideTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#1A1A1A",
     fontFamily: "Inter_600SemiBold",
   },
 
   rideSub: {
-    marginTop: 4,
-    fontFamily: "Inter_400Regular",
-    color: "#6B7280",
     fontSize: 14,
-  },
-
-  blogCard: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    marginRight: 16,
-    marginBottom: 14,
-    overflow: "hidden",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-
-  blogImage: {
-    width: 90,
-    backgroundColor: "#E2E8F0",
-  },
-
-  blogContent: {
-    flex: 1,
-    padding: 14,
-  },
-
-  blogTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#1A1A1A",
-    fontFamily: "Inter_600SemiBold",
-  },
-
-  blogText: {
-    marginTop: 4,
-    fontSize: 13,
-    color: "#6B7280",
     fontFamily: "Inter_400Regular",
+    color: "#6B7280",
   },
 });

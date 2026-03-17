@@ -6,15 +6,14 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Mainbutton from "../components/mainbutton";
 
 const { width, height } = Dimensions.get("window");
 
 const BIKE_IMAGES = [
-  require("../../assets/bike-1.png"),
+  // require("../../assets/bike-1.png"),
   // require("../../assets/bike-2.png"),
   // require("../../assets/bike-3.webp"),
 ];
@@ -94,10 +93,7 @@ export default function OnboardingSplash() {
             ))}
           </View>
 
-<Mainbutton   
-content="Next"
- onPress={handleNext} />
-
+          <Mainbutton content="Next" onPress={handleNext} />
         </View>
       </View>
     </SafeAreaView>
@@ -177,6 +173,4 @@ const styles = StyleSheet.create({
     width: 10,
     backgroundColor: "rgba(0,0,0,0.25)",
   },
-
-
 });

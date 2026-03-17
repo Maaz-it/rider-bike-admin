@@ -10,9 +10,15 @@ import {
   View,
 } from "react-native";
 
+import { useRouter } from "expo-router";
+
 const { height } = Dimensions.get("window");
 
 const BottomPopup = ({ visible, onClose }) => {
+  // const navigation = useNavigation();
+
+  const router = useRouter();
+
   const slideAnim = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const priceAnim = useRef(new Animated.Value(0)).current;
@@ -130,7 +136,15 @@ const BottomPopup = ({ visible, onClose }) => {
               <Text style={styles.priceTitle}>Estimated Price</Text>
               <Text style={styles.price}>₹ {getPrice()}</Text>
 
-              <TouchableOpacity style={styles.confirmButton}>
+              <TouchableOpacity
+                onPress={() => {
+                  onClose();
+                  router.push("/components/popup-screens/Riderloading");
+                  console.log("cli8kdex");
+                  // navigation.navigate("/loadingRider");
+                }}
+                style={styles.confirmButton}
+              >
                 <Text style={styles.confirmText}>Confirm Ride</Text>
               </TouchableOpacity>
             </Animated.View>
