@@ -25,7 +25,7 @@ const FromToInput = ({ setTo, setForm }) => {
 
   const timeout = useRef(null);
 
-  const GOOGLE_API_KEY = "APIKEY";
+  const GOOGLE_API_KEY = "AIzaSyBKrK9maTXeNBkJHYN2_ZxAuBTEU4JHkBc";
 
   const showButton = selectedFrom && selectedTo;
 

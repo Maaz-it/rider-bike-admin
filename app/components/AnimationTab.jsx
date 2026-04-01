@@ -8,7 +8,7 @@ const AnimatedButton = ({ accessibilityState, children, onPress }) => {
 
   useEffect(() => {
     Animated.spring(scale, {
-      toValue: focused ? 1.5 : 1,
+      toValue: focused ? 1. : 1,
       useNativeDriver: true,
     }).start();
   }, [focused]);

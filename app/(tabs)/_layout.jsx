@@ -6,17 +6,17 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#009",
+        tabBarActiveTintColor: "rgb(0, 0, 0)",
         tabBarStyle: {
           // position: "absolute",
           bottom: 25,
           right: 200,
           alignSelf: "center",
           width: "80%",
-
-          height: 65,
+          height: 60,
           borderRadius: 15,
           backgroundColor: "#BBFF5B",
+        
 
           elevation: 10,
           borderTopWidth: 0,
@@ -37,6 +37,22 @@ export default function TabLayout() {
         }}
       />
 
+
+
+<Tabs.Screen
+        name="collection"
+        options={{
+          tabBarButton: (props) => <AnimatedButton {...props} />,
+          tabBarIcon: ({ color, size, focus }) => (
+            <Ionicons
+              name="database"
+              size={size}
+              color={focus ? "#000000" : color}
+            />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="profile"
         options={{
@@ -50,6 +66,8 @@ export default function TabLayout() {
           ),
         }}
       />
+
+
     </Tabs>
   );
 }
