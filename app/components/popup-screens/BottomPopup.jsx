@@ -47,7 +47,7 @@ const BottomPop = ({visilb  , onClose , children}) =>{
 <View style={{flex: 1}}>
 <TouchableWithoutFeedback onPress={onClose}>
     <Animated.View 
-     style={[styles.backdrop, { opacity: backdropOpacity }]}
+     style={[styles.backdrop, { opacity: backdrop }]}
     />
 </TouchableWithoutFeedback>
 
