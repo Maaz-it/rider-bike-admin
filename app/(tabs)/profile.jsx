@@ -18,8 +18,13 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
+import { useRouter } from "expo-router";
 
 const Profile = () => {
+
+  const router = useRouter()
+
+
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
     Poppins_600SemiBold,
@@ -73,7 +78,13 @@ const Profile = () => {
         <Text style={styles.sectionTitle}>Management</Text>
 
         <View style={styles.card}>
-          <Option label="Manage Inventory" />
+        <Option 
+    label="Manage Inventory" 
+    onPress={() => {
+      console.log("Navigating to Inventory...");
+      router.push("/management/management_inventry");
+    }} 
+  />
           <Divider />
           <Option label="Delivery Records" />
           <Divider />
@@ -108,8 +119,14 @@ export default Profile;
 
 /* OPTION COMPONENT */
 
-const Option = ({ label }) => (
-  <TouchableOpacity style={styles.option}>
+/* OPTION COMPONENT */
+// Add 'onPress' inside these curly braces below!
+const Option = ({ label, onPress }) => ( 
+  <TouchableOpacity 
+    style={styles.option} 
+    onPress={onPress} 
+    activeOpacity={0.7}
+  >
     <Text style={styles.optionText}>{label}</Text>
     <Text style={styles.chevron}>›</Text>
   </TouchableOpacity>
